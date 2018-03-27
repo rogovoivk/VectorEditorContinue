@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Figures>
+  <TRectangle Width="5" PenStyle="0" PenColor="0" BrushStyle="0" BrushColor="0">
+    <point x="139" y="20"/>
+    <point x="258" y="178"/>
+  </TRectangle>
+</Figures>
