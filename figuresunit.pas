@@ -38,8 +38,8 @@ type
     class procedure copySelected(FileCopy:string);
     class procedure pasteSelected;
     class procedure History;
-    class procedure OperationRedo;
     class procedure OperationUndo;
+    class procedure OperationRedo;
 
 
 
@@ -139,7 +139,7 @@ var
   HistoryPosition, SizeHistory: integer; //щетчик
   //BigUndoRedo:boolean=False;
   //WasUndo:Boolean=False;
-  WasRedo: Boolean=False;
+  WasUndo: Boolean=False;
   //DoHistory: Boolean=False;
   //DoCopyed: Boolean=False;
   copied:TXMLDocument;
@@ -160,7 +160,7 @@ var
 begin
   CheckChange:=True;
 
-  If WasRedo=False then begin
+  If WasUndo=False then begin
     inc(HistoryPosition);
     ElHistory := FiguresToXML();
     if HistoryPosition=Length(arrayHistory)+1 then begin
@@ -174,7 +174,7 @@ begin
   begin
     for i:=HistoryPosition+1 to 20 do begin
       arrayHistory[i]:=ZeroXML;
-      WasRedo:=False;
+      WasUndo:=False;
     end;
   inc(HistoryPosition);
   ElHistory := FiguresToXML();
@@ -182,12 +182,12 @@ begin
 end;
 end;
 
-class procedure TFigure.OperationUndo();
+class procedure TFigure.OperationRedo();
 var
   i: integer;
 begin
   DoHistory:=True;
-  if (HistoryPosition<SizeHistory) and (WasRedo=True) then
+  if (HistoryPosition<SizeHistory) and (WasUndo=True) then
   begin
     inc(HistoryPosition);
     TFigure.LoadFile('');
@@ -195,14 +195,14 @@ begin
   DoHistory:=False;
 end;
 
-class procedure TFigure.OperationRedo();
+class procedure TFigure.OperationUndo();
 var
   i: integer;
 begin
-  if WasRedo=False then
+  if WasUndo=False then
     SizeHistory:=HistoryPosition;
   //IsItWorthUndo:=True;
-  WasRedo:=True;
+  WasUndo:=True;
   DoHistory:=True;
   if HistoryPosition>1 then
   begin

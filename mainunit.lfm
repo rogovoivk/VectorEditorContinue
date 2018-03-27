@@ -152,22 +152,22 @@ object Editor: TEditor
       OnClick = ButtonPasteClick
       TabOrder = 10
     end
-    object Redo: TButton
+    object Undo: TButton
       Left = 1216
       Height = 25
       Top = 72
       Width = 123
       Caption = 'Назад'
-      OnClick = RedoClick
+      OnClick = UndoClick
       TabOrder = 11
     end
-    object ButtonUndo: TButton
+    object ButtonRedo: TButton
       Left = 1216
       Height = 24
       Top = 102
       Width = 123
       Caption = 'Вперед'
-      OnClick = ButtonUndoClick
+      OnClick = ButtonRedoClick
       TabOrder = 12
     end
   end

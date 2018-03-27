@@ -16,8 +16,8 @@ type
   TPBPic = (NONE, PNG, BMP, JPG);
 
   TEditor = class(TForm)
-    ButtonUndo: TButton;
-    Redo: TButton;
+    ButtonRedo: TButton;
+    Undo: TButton;
     ButtonCopy: TButton;
     ButtonPaste: TButton;
     MenuItem1: TMenuItem;
@@ -52,7 +52,7 @@ type
     procedure ButtonCopyClick(Sender: TObject);
     procedure ButtonPasteClick(Sender: TObject);
     procedure ButtonsDown(Sender: TObject);
-    procedure ButtonUndoClick(Sender: TObject);
+    procedure ButtonRedoClick(Sender: TObject);
     procedure ClearClick(Sender: TObject);
     procedure DeleteSelectedClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -65,7 +65,7 @@ type
     procedure MExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
     procedure PBClick(Sender: TObject);
-    procedure RedoClick(Sender: TObject);
+    procedure UndoClick(Sender: TObject);
     procedure SaveAsClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
     procedure SelectAllClick(Sender: TObject);
@@ -170,12 +170,12 @@ begin
 
 end;
 
-procedure TEditor.RedoClick(Sender: TObject);
+procedure TEditor.UndoClick(Sender: TObject);
 var
   NilXML: array [0..1] of TXMLDocument;
 begin
 if (HistoryPosition>1) then
-    TFigure.OperationRedo
+    TFigure.OperationUndo
 else
   if arrayHistory[Length(arrayHistory)] = arrayHistory[Length(arrayHistory)-1] then begin
     HistoryPosition:=0;
@@ -184,9 +184,9 @@ else
 Invalidate;
 end;
 
-procedure TEditor.ButtonUndoClick(Sender: TObject);
+procedure TEditor.ButtonRedoClick(Sender: TObject);
 begin
-  TFigure.OperationUndo;
+  TFigure.OperationRedo;
   Invalidate;
 end;
 
@@ -435,6 +435,7 @@ procedure TEditor.BackClick(Sender: TObject);
 begin
   if Length(Figures)<>0 then SetLength(Figures, Length(figures) - 1);
   Invalidate;
+  TFigure.History;
 end;
 
 procedure TEditor.ButtonCopyClick(Sender: TObject);
