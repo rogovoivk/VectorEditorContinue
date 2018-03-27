@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Menus, StdCtrls, ActnList, ColorBox, Spin, ToolsUnit, FiguresUnit, Buttons,
-  ExtDlgs, ScaleUnit, HistoryUnit, LCLType;
+  ExtDlgs, ScaleUnit, HistoryUnit, LCLType, Laz2_DOM;
 
 type
 
@@ -171,13 +171,13 @@ begin
 end;
 
 procedure TEditor.RedoClick(Sender: TObject);
+var
+  NilXML: array [0..1] of TXMLDocument;
 begin
 if (HistoryPosition>1) then
-  //if (BigUndoRedo = False) then
     TFigure.OperationRedo
 else
-  if BigUndoRedo = False then begin
-    //SizeHistory:=HistoryPosition;
+  if arrayHistory[Length(arrayHistory)] = arrayHistory[Length(arrayHistory)-1] then begin
     HistoryPosition:=0;
     SetLength(Figures,0);
   end;
@@ -358,6 +358,10 @@ begin
     SelectedFigure.ParamsCreate(ParamPanel);
   end;
   SelectedCreateParamFlag:= False;
+  if (CheckChange=True) and (isSaved= True) then
+    Editor.Caption:= SaveDialog.FileName + ' - изменено';
+
+  CheckChange:=False;
   Invalidate;
 end;
 
@@ -475,6 +479,7 @@ begin
     end;
   end;
   setLength(Figures, j);
+  TFigure.History;
   Invalidate;
 end;
 

@@ -131,18 +131,21 @@ var
   layer: array of Tfigure;
   ClassesFigures: array of TFigure;
   CtrlButtonState: boolean = False;
-  IsSaved, IsItWorthUndo: boolean;
+  IsSaved: boolean;
+  //IsItWorthUndo: boolean;
   Drawing: boolean = False;
   //copystr: TStringStream;
   arrayHistory : array [1..20] of TXMLDocument;
-  HistoryPosition: integer; //щетчик
-  BigUndoRedo:boolean=False;
-  SizeHistory: integer;
-  WasUndo:Boolean=False;
+  HistoryPosition, SizeHistory: integer; //щетчик
+  //BigUndoRedo:boolean=False;
+  //WasUndo:Boolean=False;
   WasRedo: Boolean=False;
-  DoHistory: Boolean=False;
-  DoCopyed: Boolean=False;
+  //DoHistory: Boolean=False;
+  //DoCopyed: Boolean=False;
   copied:TXMLDocument;
+  DoCopyed: Boolean=False;
+  DoHistory: Boolean=False;
+  CheckChange: Boolean=False;
 
 
 
@@ -155,18 +158,15 @@ var
   ZeroXML: TXMLDocument;
   ElHistory:TXMLDocument;
 begin
-  //If IsSaved:= True then
-    //Editor.Caption:= SaveDialog.FileName + ' - изменено';
+  CheckChange:=True;
 
   If WasRedo=False then begin
-    IsItWorthUndo:=False;
     inc(HistoryPosition);
     ElHistory := FiguresToXML();
-    if HistoryPosition=21 then begin
-      for i:=1 to 19 do
+    if HistoryPosition=Length(arrayHistory)+1 then begin
+      for i:=1 to Length(arrayHistory)-1 do
        arrayHistory [i]:=arrayHistory[i+1];
        HistoryPosition:=20;
-       BigUndoRedo:=True;
     end;
     arrayHistory[HistoryPosition]:=ElHistory;
   end
@@ -174,7 +174,6 @@ begin
   begin
     for i:=HistoryPosition+1 to 20 do begin
       arrayHistory[i]:=ZeroXML;
-      IsItWorthUndo:=False;
       WasRedo:=False;
     end;
   inc(HistoryPosition);
@@ -188,7 +187,7 @@ var
   i: integer;
 begin
   DoHistory:=True;
-  if (HistoryPosition<SizeHistory) and (IsItWorthUndo=True) then
+  if (HistoryPosition<SizeHistory) and (WasRedo=True) then
   begin
     inc(HistoryPosition);
     TFigure.LoadFile('');
@@ -202,7 +201,7 @@ var
 begin
   if WasRedo=False then
     SizeHistory:=HistoryPosition;
-  IsItWorthUndo:=True;
+  //IsItWorthUndo:=True;
   WasRedo:=True;
   DoHistory:=True;
   if HistoryPosition>1 then
@@ -691,13 +690,12 @@ begin
     finally
       Doc.Free;
     end;
-  end;
-
-  if DoCopyed= True then
-    Result := XMLToFigures(Copied);
-
-  if DoHistory= True then
-    Result := XMLToFigures(arrayHistory[HistoryPosition]);
+  end
+  else
+    if DoCopyed= True then
+      Result := XMLToFigures(Copied)
+    else
+      Result := XMLToFigures(arrayHistory[HistoryPosition]);
 
 end;
 
