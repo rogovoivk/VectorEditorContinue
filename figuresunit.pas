@@ -102,6 +102,7 @@ type
   public
     procedure Draw(ACanvas: TCanvas); override;
     procedure SetRegion; override;
+    class function LoadFigure(ANode: TDOMNode): boolean; override;
     function SaveFigure(ADoc: TXMLDocument): TDOMNode; override;
     //function SaveFigure(ADoc: TXMLDocument): TDOMNode; override;
     //class function LoadFigure(ANode: TDOMNode): boolean; override;
@@ -150,6 +151,10 @@ var
   DoHistory: Boolean=False;
   CheckChange: Boolean=False;
   DoText: Boolean=False;
+  TextFont:TFont;
+  wasFont:Boolean=False;
+  ing:integer;
+  Text2History:Boolean=False;
 
 
 
@@ -203,7 +208,7 @@ class procedure TFigure.OperationUndo();
 var
   i: integer;
 begin
-  if WasUndo=False then
+  if not WasUndo then
     SizeHistory:=HistoryPosition;
   //IsItWorthUndo:=True;
   WasUndo:=True;
@@ -289,9 +294,9 @@ begin
   FiguresNode := Doc.CreateElement('Figures');
   Doc.AppendChild(FiguresNode);
   FiguresNode := Doc.DocumentElement;
-  for i := 0 to High(Figures) do
-    if figures[i].CL <> TRectangleMagnifier then
-      FiguresNode.AppendChild(Figures[i].SaveFigure(Doc));
+  for ing:= 0 to High(Figures) do
+    if figures[ing].CL <> TRectangleMagnifier then
+      FiguresNode.AppendChild(Figures[ing].SaveFigure(Doc));
   Result := Doc;
   finally
   end;
@@ -325,18 +330,16 @@ end;
 function TRectangleText.SaveFigure(ADoc: TXMLDocument): TDOMNode;
 var
   PNode: TDOMNode;
-  i, j: integer;
+  i, k: integer;
   s:string;
   st:String;
 begin
-  st:=(Figures[i] as TRectangleText).t;
+  st:=(Figures[ing] as TRectangleText).t;
   Result := ADoc.CreateElement('TRectangleText');
-  //TDOMElement(Result).SetAttribute('Width', IntToStr(Width));
-  //TDOMElement(Result).SetAttribute('PenStyle', IntToStr(Ord(PenStyle)));
-   for j:=0 to Length(st) do
-    s:=s+(Figures[i] as TRectangleText).t[j];
-  TDOMElement(Result).SetAttribute('t', s);
-  for j := 0 to High(Points) do
+  //for k:=0 to Length(st) do
+    //s:=s+(Figures[ing] as TRectangleText).t[k];
+  TDOMElement(Result).SetAttribute('textobject', (Figures[ing] as TRectangleText).t);
+  for i := 0 to High(Points) do
   begin
     PNode := ADoc.CreateElement('point');
     if DoCopyed=False then
@@ -552,7 +555,12 @@ end;
 procedure TRectangleText.Draw(ACanvas: TCanvas);
 begin
   inherited;
-  ACanvas.Font:=TFont.Create;
+  //ACanvas.Font:=TextFont;
+  if wasFont = False then
+    ACanvas.Font:=TFont.Create
+  else
+    ACanvas.Font:=TextFont;
+    //Figures[high(Figures)].Fo;
   ACanvas.Textout({trect.create(WorldToScreen(Points[0]).x, WorldToScreen(Points[0]).Y,
     WorldToScreen(Points[1]).x, WorldToScreen(Points[1]).Y), }
     min(WorldToScreen(Points[1]).x,WorldToScreen(Points[0]).x),
@@ -761,9 +769,9 @@ begin
     FigNode := Doc.DocumentElement.FirstChild;
     while FigNode <> nil do
     begin
-      for i := 0 to High(ClassesFigures) do
-        if FigNode.NodeName = ClassesFigures[i].ClassName then
-          if not ClassesFigures[i].LoadFigure(FigNode) then
+      for ing := 0 to High(ClassesFigures) do
+        if FigNode.NodeName = ClassesFigures[ing].ClassName then
+          if not ClassesFigures[ing].LoadFigure(FigNode) then
           begin
             exit(False);
           end;
@@ -834,6 +842,45 @@ begin
         StrToFloat(PNode.Attributes.Item[1].NodeValue));
     end;
     Figures[High(Figures)] := F;
+    Result := True;
+  except
+    exit(False);
+  end;
+end;
+
+class function TRectangleText.LoadFigure(ANode: TDOMNode): boolean;
+var
+  F: TRectangleText;
+  i: integer;
+  PNode: TDOMNode;
+  st: string;
+begin
+  try
+    SetLength(Figures, Length(Figures) + 1);
+    F := TRectangleText.Create;
+    //(Figures[ing] as TRectangleText).t:=
+      st:=(ANode.Attributes.Item[0].NodeValue);
+      F.t:=st;
+   // f.PenStyle:=psSolid;
+  //  f.BrushStyle:=bsClear;
+    //f.PenStyle:=CasePenStyle(strtoint(ANode.Attributes.Item[1].NodeValue));
+    //f.PenColor:=strtoint(ANode.Attributes.Item[2].NodeValue);
+    //f.BrushStyle:=CaseBrushStyle(strtoint(ANode.Attributes.Item[3].NodeValue));
+    //f.BrushColor:=strtoint(ANode.Attributes.Item[4].NodeValue);
+    //f.RoundingRadiusY:=strtoint(ANode.Attributes.Item[5].NodeValue);
+    //f.RoundingRadiusX:=strtoint(ANode.Attributes.Item[6].NodeValue);
+    PNode := ANode;
+    for i := 1 to ANode.GetChildCount do
+    begin
+      PNode := PNode.GetNextNode;
+      SetLength(f.Points,Length(f.Points)+1);
+      f.Points[High(f.Points)] :=
+        FloatPoint(StrToFloat(PNode.Attributes.Item[0].NodeValue),
+        StrToFloat(PNode.Attributes.Item[1].NodeValue));
+    end;
+    Figures[High(Figures)] := F;
+
+
     Result := True;
   except
     exit(False);
@@ -947,5 +994,6 @@ initialization
   AddFigure(TRectangle.Create);
   AddFigure(TEllipse.Create);
   AddFigure(TRoundedRectangle.Create);
+  AddFigure(TRectangleText.Create);
 end.
 

@@ -1,7 +1,7 @@
 object Editor: TEditor
-  Left = 155
+  Left = 459
   Height = 534
-  Top = 577
+  Top = 281
   Width = 1423
   Caption = 'Редактор'
   ClientHeight = 509
@@ -22,8 +22,8 @@ object Editor: TEditor
     AnchorSideBottom.Control = ScrollBarHorizontal
     Cursor = crCross
     Left = 0
-    Height = 352
-    Top = 136
+    Height = 362
+    Top = 126
     Width = 1400
     Align = alClient
     BorderSpacing.Right = 2
@@ -36,154 +36,154 @@ object Editor: TEditor
   end
   object ToolPanel: TPanel
     Left = 0
-    Height = 136
+    Height = 126
     Top = 0
     Width = 1423
     Align = alTop
-    ClientHeight = 136
+    ClientHeight = 126
     ClientWidth = 1423
     Color = clWhite
     ParentBidiMode = False
     ParentColor = False
-    TabOrder = 0
+    TabOrder = 2
     TabStop = True
     OnClick = ToolPanelClick
     object ButtonPanel: TPanel
-      Left = 16
+      Left = 1
       Height = 112
-      Top = 9
+      Top = 2
       Width = 336
-      TabOrder = 0
+      TabOrder = 1
     end
     object ZoomSpinEdit: TSpinEdit
-      Left = 944
+      Left = 929
       Height = 28
-      Top = 104
+      Top = 97
       Width = 125
       Enabled = False
       MaxValue = 800
       MinValue = 1
       OnChange = ZoomChange
       TabStop = False
-      TabOrder = 1
+      TabOrder = 2
       Value = 100
     end
     object Clear: TButton
-      Left = 944
+      Left = 929
       Height = 25
-      Top = 8
+      Top = 1
       Width = 123
       Caption = 'Очистить'
       OnClick = ClearClick
       ParentShowHint = False
-      TabOrder = 2
-      TabStop = False
-    end
-    object Back: TButton
-      Left = 944
-      Height = 25
-      Top = 40
-      Width = 123
-      Caption = 'уд. последнее'
-      OnClick = BackClick
-      TabOrder = 3
+      TabOrder = 0
       TabStop = False
     end
     object ZoomLabel: TLabel
-      Left = 920
+      Left = 905
       Height = 20
-      Top = 106
+      Top = 99
       Width = 26
       Caption = 'Зум'
       ParentColor = False
     end
     object ShowAllButton: TButton
-      Left = 944
+      Left = 929
       Height = 25
-      Top = 72
+      Top = 65
       Width = 123
       Caption = 'Показать все'
       OnClick = ShowAllButtonClick
-      TabOrder = 4
+      TabOrder = 3
       TabStop = False
     end
     object SelectAll: TButton
-      Left = 1080
+      Left = 1065
       Height = 25
-      Top = 8
+      Top = 1
       Width = 123
       Caption = 'Выделить все'
       OnClick = SelectAllClick
-      TabOrder = 5
+      TabOrder = 4
       TabStop = False
     end
     object DeleteSelected: TButton
-      Left = 1080
+      Left = 1065
       Height = 25
-      Top = 40
+      Top = 33
       Width = 123
       Caption = 'Удалить'
       OnClick = DeleteSelectedClick
-      TabOrder = 6
+      TabOrder = 5
       TabStop = False
     end
     object SelectedUp: TButton
-      Left = 1080
+      Left = 1065
       Height = 25
-      Top = 72
+      Top = 65
       Width = 123
       Caption = 'Поднять'
       OnClick = SelectedUpClick
-      TabOrder = 7
+      TabOrder = 6
       TabStop = False
     end
     object SelectedDown: TButton
-      Left = 1080
+      Left = 1065
       Height = 25
-      Top = 102
+      Top = 95
       Width = 123
       Caption = 'Опустить'
       OnClick = SelectedDownClick
-      TabOrder = 8
+      TabOrder = 7
       TabStop = False
     end
     object ButtonCopy: TButton
-      Left = 1216
+      Left = 1201
       Height = 24
-      Top = 8
+      Top = 1
       Width = 123
       Caption = 'Копировать'
       OnClick = ButtonCopyClick
-      TabOrder = 9
+      TabOrder = 8
       TabStop = False
     end
     object ButtonPaste: TButton
-      Left = 1216
+      Left = 1201
       Height = 24
-      Top = 40
+      Top = 33
       Width = 123
       Caption = 'Вставить'
       OnClick = ButtonPasteClick
-      TabOrder = 10
+      TabOrder = 9
       TabStop = False
     end
     object Undo: TButton
-      Left = 1216
+      Left = 1201
       Height = 25
-      Top = 72
+      Top = 65
       Width = 123
       Caption = 'Назад'
       OnClick = UndoClick
-      TabOrder = 11
+      TabOrder = 10
       TabStop = False
     end
     object ButtonRedo: TButton
-      Left = 1216
+      Left = 1201
       Height = 24
-      Top = 102
+      Top = 95
       Width = 123
       Caption = 'Вперед'
       OnClick = ButtonRedoClick
+      TabOrder = 11
+      TabStop = False
+    end
+    object TheTextFont: TButton
+      Left = 929
+      Height = 25
+      Top = 33
+      Width = 123
+      Caption = 'Формат текста'
+      OnClick = TheTextFontClick
       TabOrder = 12
       TabStop = False
     end
@@ -196,24 +196,24 @@ object Editor: TEditor
     Align = alBottom
     Max = 881
     PageSize = 881
-    TabOrder = 1
+    TabOrder = 0
     OnScroll = ScrollBarScroll
   end
   object ScrollBarVertical: TScrollBar
     Left = 1402
-    Height = 352
-    Top = 136
+    Height = 362
+    Top = 126
     Width = 21
     Align = alRight
     Kind = sbVertical
     Max = 601
     PageSize = 601
-    TabOrder = 2
+    TabOrder = 1
     OnScroll = ScrollBarScroll
   end
   object MMenu: TMainMenu
-    left = 424
-    top = 56
+    left = 672
+    top = 16
     object MFile: TMenuItem
       Caption = 'Файл'
       object Save: TMenuItem
@@ -243,11 +243,17 @@ object Editor: TEditor
   end
   object SaveDialog: TSaveDialog
     Filter = 'xml|.xml|bmp|.bmo|png|.png|jpg|.jpg'
-    left = 472
-    top = 56
+    left = 720
+    top = 16
   end
   object OpenDialog1: TOpenDialog
-    left = 520
-    top = 56
+    left = 768
+    top = 16
+  end
+  object FontDialog1: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    left = 816
+    top = 16
   end
 end

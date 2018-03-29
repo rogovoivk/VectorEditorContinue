@@ -16,7 +16,9 @@ type
   TPBPic = (NONE, PNG, BMP, JPG);
 
   TEditor = class(TForm)
+    TheTextFont: TButton;
     ButtonRedo: TButton;
+    FontDialog1: TFontDialog;
     Undo: TButton;
     ButtonCopy: TButton;
     ButtonPaste: TButton;
@@ -34,7 +36,6 @@ type
     SelectedDown: TButton;
     ShowAllButton: TButton;
     Clear: TButton;
-    Back: TButton;
     ZoomLabel: TLabel;
     ScrollBarHorizontal: TScrollBar;
     ScrollBarVertical: TScrollBar;
@@ -49,6 +50,7 @@ type
     PB: TPaintBox;
     ZoomSpinEdit: TSpinEdit;
     procedure BackClick(Sender: TObject);
+    procedure TheTextFontClick(Sender: TObject);
     procedure ButtonCopyClick(Sender: TObject);
     procedure ButtonPasteClick(Sender: TObject);
     procedure ButtonsDown(Sender: TObject);
@@ -65,7 +67,6 @@ type
     procedure FormPaint(Sender: TObject);
     procedure MExitClick(Sender: TObject);
     procedure OpenClick(Sender: TObject);
-    procedure PBClick(Sender: TObject);
     procedure UndoClick(Sender: TObject);
     procedure SaveAsClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
@@ -169,10 +170,6 @@ begin
   Invalidate;
 end;
 
-procedure TEditor.PBClick(Sender: TObject);
-begin
-
-end;
 
 procedure TEditor.UndoClick(Sender: TObject);
 var
@@ -187,12 +184,16 @@ begin
     SetLength(Figures, 0);
   end;
   Invalidate;
+  Undo.Enabled:=False;
+  Undo.Enabled:=True;
 end;
 
 procedure TEditor.ButtonRedoClick(Sender: TObject);
 begin
   TFigure.OperationRedo;
   Invalidate;
+  ButtonRedo.Enabled:=False;
+  ButtonRedo.Enabled:=True;
 end;
 
 procedure TEditor.SaveAsClick(Sender: TObject);
@@ -299,6 +300,8 @@ begin
   for i := 0 to High(Figures) do
     Figures[i].Selected := True;
   Invalidate;
+  SelectAll.Enabled:=False;
+  SelectAll.Enabled:=True;
 end;
 
 procedure TEditor.SelectedDownClick(Sender: TObject);
@@ -321,6 +324,8 @@ begin
     end;
   end;
   Invalidate;
+  SelectedDown.Enabled:=False;
+  SelectedDown.Enabled:=True;
 end;
 
 procedure TEditor.SelectedUpClick(Sender: TObject);
@@ -343,6 +348,8 @@ begin
     end;
   end;
   Invalidate;
+  SelectedUp.Enabled:=False;
+  SelectedUp.Enabled:=True;
 end;
 
 procedure TEditor.MouseUp(Sender: TObject; Button: TMouseButton;
@@ -385,13 +392,15 @@ begin
   for i := 0 to high(Tool) do
   begin
     ToolButton := TSpeedButton.Create(Editor);
-    ToolButton.Width := 40;
-    ToolButton.Height := 40;
-    ToolButton.Top := (i div 5) * 50;
-    ToolButton.Left := (i mod 5) * 60;
+    ToolButton.Width := 50;
+    ToolButton.Height := 50;
+    ToolButton.Top := (i div 5) * 55;
+    ToolButton.Left := 10+(i mod 5) * 65;
     ToolButton.Parent := ButtonPanel;
     ToolButton.Tag := i;
     ToolButton.OnClick := @ButtonsDown;
+    //ToolButton.:=True;
+    ToolButton.Flat:=True;
     if i = 0 then
       ToolButton.Click();
     ToolIcon := TBitmap.Create;
@@ -414,6 +423,7 @@ begin
 if DoText=True then
 begin
     ABrushColor :=clWhite;
+    Text2History:=True;
 
   if ((Figures[high(Figures)]).selected)and(Figures[high(Figures)] is TRectangleText) then
   begin
@@ -423,12 +433,15 @@ begin
         if (Figures[i]).selected then
           Figures[i].selected:= not Figures[i].Selected;
       DoText:=False;
+      Text2History:=False;
+      TFigure.History;
     end
     else
     if key=#8 then begin
-      for i:=0 to high((Figures[high(Figures)] as TRectangleText).t)-1 do
-        st:=st+(Figures[high(Figures)] as TRectangleText).t[i];
-      (Figures[high(Figures)] as TRectangleText).t:=st;
+      //for i:=0 to high((Figures[high(Figures)] as TRectangleText).t)-1 do
+        //st:=st+(Figures[high(Figures)] as TRectangleText).t[i];
+      (Figures[high(Figures)] as TRectangleText).t:=copy
+      ((Figures[high(Figures)] as TRectangleText).t,1,length((Figures[high(Figures)] as TRectangleText).t)-1);
 
       //f:=(Figures[high(Figures)] as TRectangleText).t;
       //(Figures[high(Figures)] as TRectangleText).t:=f;
@@ -481,10 +494,19 @@ end;
 
 procedure TEditor.BackClick(Sender: TObject);
 begin
-  if Length(Figures) <> 0 then
-    SetLength(Figures, Length(figures) - 1);
+
+end;
+
+procedure TEditor.TheTextFontClick(Sender: TObject);
+begin
+    if FontDialog1.Execute then
+  begin
+    wasFont:=True;
+    TextFont:=FontDialog1.Font;
+  end;
+  TheTextFont.Enabled:=False;
+  TheTextFont.Enabled:=True;
   Invalidate;
-  TFigure.History;
 end;
 
 procedure TEditor.ButtonCopyClick(Sender: TObject);
@@ -496,6 +518,8 @@ begin
 
   TFigure.CopySelected('C:\Users\Vladislav Rogovoi\Desktop\VectorEditor v2\copyselected');
   Invalidate;
+  Clear.Enabled:=False;
+  Clear.Enabled:=True;
 
 end;
 
@@ -504,6 +528,8 @@ begin
   TFigure.pasteSelected;
   Invalidate;
   TFigure.History;
+  ButtonCopy.Enabled:=False;
+  ButtonCopy.Enabled:=True;
 end;
 
 
@@ -511,6 +537,8 @@ procedure TEditor.ClearClick(Sender: TObject);
 begin
   SetLength(Figures, 0);
   Invalidate;
+  Clear.Enabled:=False;
+  Clear.Enabled:=True;
 end;
 
 procedure TEditor.DeleteSelectedClick(Sender: TObject);
@@ -531,6 +559,8 @@ begin
   setLength(Figures, j);
   TFigure.History;
   Invalidate;
+  DeleteSelected.Enabled:=False;
+  DeleteSelected.Enabled:=True;
 end;
 
 procedure TEditor.FormPaint(Sender: TObject);
@@ -594,6 +624,8 @@ begin
   ScrollBarHorizontal.Min := trunc(MinPoint.X);
   Offset.X := 0;
   Offset.Y := 0;
+  ShowAllButton.Enabled:=False;
+  ShowAllButton.Enabled:=True;
 end;
 
 procedure TEditor.ToolPanelClick(Sender: TObject);

@@ -49,6 +49,9 @@ type
     procedure CreateObjects(Panel: TPanel; pos: integer); override;
   end;
 
+
+
+
   TPenStyleParam = class(TParam)
     procedure ChangePenStyle(Sender: TObject);
     procedure CreateObjects(Panel: TPanel; pos: integer); override;
@@ -173,6 +176,7 @@ var
   ColorLabel: TLabel;
   PenColor: TColorBox;
 begin
+  DoText:=False;
   ColorLabel := TLabel.Create(Panel);
   ColorLabel.Caption := 'Цвет карандаша';
   ColorLabel.Top := pos;
@@ -277,11 +281,13 @@ begin
   begin
     ColorLabel.Top := pos - 120;
     ColorLabel.Left := pos + 60;
+    ColorLabel.Visible:=True;
   end
   else
   begin
-    ColorLabel.Top := 60;
-    ColorLabel.Left := 240;
+    ColorLabel.Top := 0;
+    ColorLabel.Left := 0;
+    ColorLabel.Visible:=False;
   end;
   ColorLabel.Parent := Panel;
 
@@ -290,11 +296,14 @@ begin
   begin
     BrushColor.Left := pos + 60;
     BrushColor.Top := pos - 100;
+    ColorLabel.Visible:=True;
   end
   else
   begin
-    BrushColor.Left := 240;
-    BrushColor.Top := 80;
+    BrushColor.Left := 0;
+    BrushColor.Top := 10;
+     BrushColor.Visible:=False;
+     ABrushColor:= clWhite;
   end;
   BrushColor.Parent := Panel;
   if DoText=True then
@@ -474,11 +483,18 @@ procedure TFigureTool.ParamsCreate(Panel: TPanel);
 var
   i, pos: integer;
 begin
-//  DoText:=False;
+  DoText:=True;
+  if Text2History=True then
+  begin
+    Text2History:=False;
+    TFigure.History;
+  end;
   if NilParam=True then begin
     if Length(Param)>0 then
     for i := 0 to high(Param) do
     begin
+      if i=2 then
+        DoText:=False;
       Param[i].CreateObjects(Panel, i * 60);
     end;
   end
@@ -838,6 +854,9 @@ var
   //AFigure: TBigFigure;
   i: integer;
 begin
+  For i:=0 to high(Figures) do
+  if (Figures[i]).selected then
+          Figures[i].selected:= not Figures[i].Selected;
   NilParam:=True;
   //if DoText= False then begin
     DoText:=True;
@@ -873,7 +892,7 @@ begin
 
 procedure TText.MouseMove(X: integer; Y: integer);
 begin
-  (Figures[high(Figures)] as TLittleFigure).Points[1] := ScreenToWorld(Point(X,Y));
+  //(Figures[high(Figures)] as TLittleFigure).Points[1] := ScreenToWorld(Point(X,Y));
 end;
 
 

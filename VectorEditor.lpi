@@ -83,10 +83,13 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="1">
+    <Exceptions Count="2">
       <Item1>
         <Name Value="RunError(219)"/>
       </Item1>
+      <Item2>
+        <Name Value="EXMLReadError"/>
+      </Item2>
     </Exceptions>
   </Debugging>
 </CONFIG>
