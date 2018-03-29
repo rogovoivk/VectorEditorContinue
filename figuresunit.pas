@@ -35,7 +35,7 @@ type
     procedure DrawSelection(AFigure: TFigure; Canvas: TCanvas; Width: integer); virtual;
     function SaveFigure(ADoc: TXMLDocument): TDOMNode; virtual; abstract;
     function SaveFigureInString(): String;
-    class procedure copySelected(FileCopy:string);
+    class procedure copySelected;
     class procedure pasteSelected;
     class procedure History;
     class procedure OperationUndo;
@@ -226,7 +226,7 @@ end;
 
 { copy/paste }
 
-class procedure TFigure.copySelected(FileCopy: string);
+class procedure TFigure.copySelected();
 var
   Doc: TXMLDocument;
   i, j: integer;

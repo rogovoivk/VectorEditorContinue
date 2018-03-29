@@ -59,9 +59,6 @@ type
     procedure DeleteSelectedClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
-    procedure MenuItem1Click(Sender: TObject);
-    procedure MenuItemRedoClick(Sender: TObject);
-    procedure MenuItemUndoClick(Sender: TObject);
     procedure MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer; ACanvas: TCanvas);
     procedure FormPaint(Sender: TObject);
@@ -100,6 +97,7 @@ var
   isDrawing: boolean;
   CurrentTool: TFigureTool;
   FileName: string;
+  IsLoaded:Boolean=False;
 
 implementation
 
@@ -115,7 +113,7 @@ procedure TEditor.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState
 begin
 
 
-  case key of
+  {case key of
     VK_Z: if CtrlButtonState then
         if ShiftButtonState then
         begin
@@ -141,7 +139,7 @@ begin
             //SelectedNumber := 0;
           end;
         end;
-  end;
+  end;}
 end;
 
 { TEditor }
@@ -159,6 +157,8 @@ var
   pngPic: TPortableNetworkGraphic;
   jpgPic: TJPEGImage;
   openxml: boolean = True;
+  i: Integer;
+  NilXML: TXMLDocument;
 begin
   if OpenDialog1.Execute then
     if (TFigure.LoadFile(OpenDialog1.FileName)) then
@@ -166,6 +166,9 @@ begin
       Editor.Caption := OpenDialog1.FileName + ' - ';
       FileName := OpenDialog1.FileName;
       IsSaved := True;
+      for i:=1 to Length(arrayHistory) do
+        arrayHistory[i]:=NilXML;
+      IsLoaded:=True;
     end;
   Invalidate;
 end;
@@ -180,8 +183,11 @@ begin
   else
   if arrayHistory[Length(arrayHistory)] = arrayHistory[Length(arrayHistory) - 1] then
   begin
-    HistoryPosition := 0;
-    SetLength(Figures, 0);
+    if IsLoaded=False then begin
+      HistoryPosition := 0;
+      SetLength(Figures, 0);
+      WasUndo:=True;
+    end;
   end;
   Invalidate;
   Undo.Enabled:=False;
@@ -419,9 +425,52 @@ var
   f:TRectangleText;
   i: Integer;
   st: String;
+  NilXML: array [0..1] of TXMLDocument;
 begin
+  case Key of
+  #26:
+  begin
+    if (HistoryPosition > 1) then
+      TFigure.OperationUndo
+    else
+    if arrayHistory[Length(arrayHistory)] = arrayHistory[Length(arrayHistory) - 1] then
+    begin
+      if IsLoaded=False then
+      begin
+        HistoryPosition := 0;
+        SetLength(Figures, 0);
+        WasUndo:=True;
+      end;
+    end;
+    Invalidate;
+    end;
+  #25:
+  begin
+    TFigure.OperationRedo;
+    Invalidate;
+  end;
+  #3:
+  begin
+    TFigure.CopySelected;
+    Invalidate;
+  end;
+  #22:
+  begin
+    TFigure.pasteSelected;
+    Invalidate;
+    TFigure.History;
+  end;
+  else
+
+
+
+
+
+
 if DoText=True then
 begin
+
+
     ABrushColor :=clWhite;
     Text2History:=True;
 
@@ -455,20 +504,6 @@ begin
   Invalidate;
 end;
 end;
-
-procedure TEditor.MenuItem1Click(Sender: TObject);
-begin
-
-end;
-
-procedure TEditor.MenuItemRedoClick(Sender: TObject);
-begin
-
-end;
-
-procedure TEditor.MenuItemUndoClick(Sender: TObject);
-begin
-
 end;
 
 procedure TEditor.ButtonsDown(Sender: TObject);
@@ -516,7 +551,7 @@ begin
   TFigure.SaveFile(FileCopy)
   TFigure.copySelected;}
 
-  TFigure.CopySelected('C:\Users\Vladislav Rogovoi\Desktop\VectorEditor v2\copyselected');
+  TFigure.CopySelected;
   Invalidate;
   Clear.Enabled:=False;
   Clear.Enabled:=True;
