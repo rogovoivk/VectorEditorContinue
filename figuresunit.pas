@@ -97,9 +97,12 @@ type
   end;
 
   TRectangleText = class(TLittleFigure)
+  BrushColor: TColor;
+  t:string;
   public
     procedure Draw(ACanvas: TCanvas); override;
     procedure SetRegion; override;
+    function SaveFigure(ADoc: TXMLDocument): TDOMNode; override;
     //function SaveFigure(ADoc: TXMLDocument): TDOMNode; override;
     //class function LoadFigure(ANode: TDOMNode): boolean; override;
   end;
@@ -146,6 +149,7 @@ var
   DoCopyed: Boolean=False;
   DoHistory: Boolean=False;
   CheckChange: Boolean=False;
+  DoText: Boolean=False;
 
 
 
@@ -280,6 +284,7 @@ var
   FiguresNode: TDOMNode;
   i: integer;
 begin
+  try
   Doc := TXMLDocument.Create;
   FiguresNode := Doc.CreateElement('Figures');
   Doc.AppendChild(FiguresNode);
@@ -288,6 +293,8 @@ begin
     if figures[i].CL <> TRectangleMagnifier then
       FiguresNode.AppendChild(Figures[i].SaveFigure(Doc));
   Result := Doc;
+  finally
+  end;
 end;
 
 function TPolyLine.SaveFigure(ADoc: TXMLDocument): TDOMNode;
@@ -300,6 +307,36 @@ begin
   TDOMElement(Result).SetAttribute('PenStyle', IntToStr(Ord(PenStyle)));
   TDOMElement(Result).SetAttribute('PenColor', IntToStr(PenColor));
   for i := 0 to High(Points) do
+  begin
+    PNode := ADoc.CreateElement('point');
+    if DoCopyed=False then
+      TDOMElement(PNode).SetAttribute('x', FloatToStr(Points[i].X))
+    else
+      TDOMElement(PNode).SetAttribute('x', FloatToStr(Points[i].X+20));
+    if DoCopyed=False then
+    TDOMElement(PNode).SetAttribute('y', FloatToStr(Points[i].Y))
+    else
+      TDOMElement(PNode).SetAttribute('y', FloatToStr(Points[i].Y+20));
+    Result.AppendChild(PNode);
+  end;
+end;
+
+
+function TRectangleText.SaveFigure(ADoc: TXMLDocument): TDOMNode;
+var
+  PNode: TDOMNode;
+  i, j: integer;
+  s:string;
+  st:String;
+begin
+  st:=(Figures[i] as TRectangleText).t;
+  Result := ADoc.CreateElement('TRectangleText');
+  //TDOMElement(Result).SetAttribute('Width', IntToStr(Width));
+  //TDOMElement(Result).SetAttribute('PenStyle', IntToStr(Ord(PenStyle)));
+   for j:=0 to Length(st) do
+    s:=s+(Figures[i] as TRectangleText).t[j];
+  TDOMElement(Result).SetAttribute('t', s);
+  for j := 0 to High(Points) do
   begin
     PNode := ADoc.CreateElement('point');
     if DoCopyed=False then
@@ -408,7 +445,7 @@ begin
   TDOMElement(Result).SetAttribute('RadiusY', IntToStr(RoundingRadiusY));
   for i := 0 to High(Points) do
   begin
-    ShowMessage(IntToStr(i));
+    //ShowMessage(IntToStr(i));
     PNode := ADoc.CreateElement('point');
   if DoCopyed=False then
       TDOMElement(PNode).SetAttribute('x', FloatToStr(Points[i].X))
@@ -515,8 +552,14 @@ end;
 procedure TRectangleText.Draw(ACanvas: TCanvas);
 begin
   inherited;
-  ACanvas.Frame(WorldToScreen(Points[0]).x, WorldToScreen(Points[0]).Y,
-    WorldToScreen(Points[1]).x, WorldToScreen(Points[1]).Y);
+  ACanvas.Font:=TFont.Create;
+  ACanvas.Textout({trect.create(WorldToScreen(Points[0]).x, WorldToScreen(Points[0]).Y,
+    WorldToScreen(Points[1]).x, WorldToScreen(Points[1]).Y), }
+    min(WorldToScreen(Points[1]).x,WorldToScreen(Points[0]).x),
+    min(WorldToScreen(Points[1]).y,WorldToScreen(Points[0]).y),t);
+
+
+
 end;
 
 procedure TRoundedRectangle.Draw(ACanvas: TCanvas);

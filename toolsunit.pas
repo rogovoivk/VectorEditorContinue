@@ -273,14 +273,32 @@ var
 begin
   ColorLabel := TLabel.Create(Panel);
   ColorLabel.Caption := 'Цвет заливки';
-  ColorLabel.Top := pos - 120;
-  ColorLabel.Left := pos + 60;
+  if DoText= False then
+  begin
+    ColorLabel.Top := pos - 120;
+    ColorLabel.Left := pos + 60;
+  end
+  else
+  begin
+    ColorLabel.Top := 60;
+    ColorLabel.Left := 240;
+  end;
   ColorLabel.Parent := Panel;
 
   BrushColor := TColorBox.Create(Panel);
-  BrushColor.Left := pos + 60;
-  BrushColor.Top := pos - 100;
+  if DoText= False then
+  begin
+    BrushColor.Left := pos + 60;
+    BrushColor.Top := pos - 100;
+  end
+  else
+  begin
+    BrushColor.Left := 240;
+    BrushColor.Top := 80;
+  end;
   BrushColor.Parent := Panel;
+  if DoText=True then
+    ABrushColor:= clWhite;
   BrushColor.Selected := ABrushColor;
   BrushColor.OnChange := @ChangeBrushColor;
 end;
@@ -289,7 +307,7 @@ procedure TBrushColorParam.ChangeBrushColor(Sender: TObject);
 var
   i: Integer;
 begin
-  ABrushColor := (Sender as TColorBox).Selected;
+    ABrushColor := (Sender as TColorBox).Selected;
   for I:=0 to High(Figures) do
     if (Figures[i].Selected) and not (Figures[i].Index = 1)
       then (Figures[i] as TBigFigure).BrushColor := ABrushColor;
@@ -366,6 +384,7 @@ begin
     if (Figures[i].Selected) and (Figures[i].Index = 3)
       then (Figures[i] as TRoundedRectangle).RoundingRadiusX := ARadiusX;
    Invalidate_; {t00}
+   TFigure.History;
 end;
 
 procedure TRoundingRadiusParamY.CreateObjects(Panel: TPanel; pos: integer);
@@ -397,10 +416,12 @@ begin
     if (Figures[i].Selected) and (Figures[i].Index = 3)
       then (Figures[i] as TRoundedRectangle).RoundingRadiusY := ARadiusY;
    Invalidate_; {t00}
+   TFigure.History;
 end;
 
 procedure TLittleFigureTool.ParamListCreate();
 begin
+  DoText:=False;
   SetLength(Param, Length(Param) + 3);
   Param[High(Param) - 2] := TPenColorParam.Create();
   Param[High(Param) - 1] := TPenStyleParam.Create();
@@ -426,29 +447,36 @@ end;
 procedure TPaw.ParamListCreate();
 begin
   HelpPaw:=0;
+  DoText:=False;
 end;
 
 procedure Tmagnifier.ParamListCreate();
 begin
   HelpPaw:=1;
+  DoText:=False;
 end;
 
 procedure TSelectTool.ParamListCreate();
 begin
+  DoText:=False;
 end;
 
 procedure TText.ParamListCreate();
 begin
   HelpPaw:=1;
+  DoText:=True;
   NilParam:=True;
+  SetLength(Param, Length(Param) + 1);
+  Param[high(Param)] := TBrushColorParam.Create();
 end;
 
 procedure TFigureTool.ParamsCreate(Panel: TPanel);
 var
   i, pos: integer;
 begin
+//  DoText:=False;
   if NilParam=True then begin
-    if high(Param)>0 then
+    if Length(Param)>0 then
     for i := 0 to high(Param) do
     begin
       Param[i].CreateObjects(Panel, i * 60);
@@ -806,18 +834,24 @@ end;
 
 procedure TText.MouseDown(X: integer; Y: integer);
 var
-  AFigure: TRectangleMagnifier;
+  AFigure: TRectangleText;
   //AFigure: TBigFigure;
   i: integer;
 begin
-  SetLength(Figures, Length(figures) + 1);
-  Figures[high(Figures)] := TRectangleMagnifier.Create();
-  AFigure := (Figures[high(Figures)] as TRectangleMagnifier);
-  SetLength(AFigure.Points, 2);
-  AFigure.Points[0] := ScreenToWorld(Point(X,Y));
-  AFigure.Points[1] := ScreenToWorld(Point(X,Y));
-  AFigure.Index := 1;
-  MaxMin(Point(X, Y));
+  NilParam:=True;
+  //if DoText= False then begin
+    DoText:=True;
+    SetLength(Figures, Length(figures) + 1);
+    Figures[high(Figures)] := TRectangleText.Create();
+    AFigure := (Figures[high(Figures)] as TRectangleText);
+    SetLength(AFigure.Points, 2);
+    AFigure.Points[0] := ScreenToWorld(Point(X,Y));
+    AFigure.Points[1] := ScreenToWorld(Point(X,Y));
+    //AFigure.BrushColor := clWhite;
+    AFigure.Index := 0;
+    MaxMin(Point(X, Y));
+    Figures[High(Figures)].selected:= not Figures[High(Figures)].Selected;
+  end;
   //SelectedCreateParamFlag := True;
 
 {begin
@@ -835,7 +869,7 @@ begin
   AFigure.BrushStyle := ABrushStyle;
   AFigure.Index := 2;
   MaxMin(Point(X, Y));}
-end;
+//end;
 
 procedure TText.MouseMove(X: integer; Y: integer);
 begin

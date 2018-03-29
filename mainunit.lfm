@@ -1,15 +1,18 @@
 object Editor: TEditor
-  Left = 188
+  Left = 155
   Height = 534
-  Top = 377
+  Top = 577
   Width = 1423
   Caption = 'Редактор'
   ClientHeight = 509
   ClientWidth = 1423
   Color = clWindow
   DesignTimePPI = 120
+  KeyPreview = True
   Menu = MMenu
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
   Position = poDesktopCenter
   LCLVersion = '1.8.0.6'
   WindowState = wsFullScreen
@@ -43,6 +46,7 @@ object Editor: TEditor
     ParentBidiMode = False
     ParentColor = False
     TabOrder = 0
+    TabStop = True
     OnClick = ToolPanelClick
     object ButtonPanel: TPanel
       Left = 16
@@ -60,6 +64,7 @@ object Editor: TEditor
       MaxValue = 800
       MinValue = 1
       OnChange = ZoomChange
+      TabStop = False
       TabOrder = 1
       Value = 100
     end
@@ -70,7 +75,9 @@ object Editor: TEditor
       Width = 123
       Caption = 'Очистить'
       OnClick = ClearClick
+      ParentShowHint = False
       TabOrder = 2
+      TabStop = False
     end
     object Back: TButton
       Left = 944
@@ -80,6 +87,7 @@ object Editor: TEditor
       Caption = 'уд. последнее'
       OnClick = BackClick
       TabOrder = 3
+      TabStop = False
     end
     object ZoomLabel: TLabel
       Left = 920
@@ -97,6 +105,7 @@ object Editor: TEditor
       Caption = 'Показать все'
       OnClick = ShowAllButtonClick
       TabOrder = 4
+      TabStop = False
     end
     object SelectAll: TButton
       Left = 1080
@@ -106,6 +115,7 @@ object Editor: TEditor
       Caption = 'Выделить все'
       OnClick = SelectAllClick
       TabOrder = 5
+      TabStop = False
     end
     object DeleteSelected: TButton
       Left = 1080
@@ -115,6 +125,7 @@ object Editor: TEditor
       Caption = 'Удалить'
       OnClick = DeleteSelectedClick
       TabOrder = 6
+      TabStop = False
     end
     object SelectedUp: TButton
       Left = 1080
@@ -124,6 +135,7 @@ object Editor: TEditor
       Caption = 'Поднять'
       OnClick = SelectedUpClick
       TabOrder = 7
+      TabStop = False
     end
     object SelectedDown: TButton
       Left = 1080
@@ -133,6 +145,7 @@ object Editor: TEditor
       Caption = 'Опустить'
       OnClick = SelectedDownClick
       TabOrder = 8
+      TabStop = False
     end
     object ButtonCopy: TButton
       Left = 1216
@@ -142,6 +155,7 @@ object Editor: TEditor
       Caption = 'Копировать'
       OnClick = ButtonCopyClick
       TabOrder = 9
+      TabStop = False
     end
     object ButtonPaste: TButton
       Left = 1216
@@ -151,6 +165,7 @@ object Editor: TEditor
       Caption = 'Вставить'
       OnClick = ButtonPasteClick
       TabOrder = 10
+      TabStop = False
     end
     object Undo: TButton
       Left = 1216
@@ -160,6 +175,7 @@ object Editor: TEditor
       Caption = 'Назад'
       OnClick = UndoClick
       TabOrder = 11
+      TabStop = False
     end
     object ButtonRedo: TButton
       Left = 1216
@@ -169,6 +185,7 @@ object Editor: TEditor
       Caption = 'Вперед'
       OnClick = ButtonRedoClick
       TabOrder = 12
+      TabStop = False
     end
   end
   object ScrollBarHorizontal: TScrollBar
