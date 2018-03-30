@@ -160,6 +160,8 @@ var
   i: Integer;
   NilXML: TXMLDocument;
 begin
+
+  SetLength(Figures, 0);
   if OpenDialog1.Execute then
     if (TFigure.LoadFile(OpenDialog1.FileName)) then
     begin
@@ -184,6 +186,8 @@ begin
   if arrayHistory[Length(arrayHistory)] = arrayHistory[Length(arrayHistory) - 1] then
   begin
     if IsLoaded=False then begin
+      if SizeHistory<2
+        then SizeHistory:=1;
       HistoryPosition := 0;
       SetLength(Figures, 0);
       WasUndo:=True;
@@ -213,7 +217,9 @@ var
   JPEG: TJPEGImage;
   s: string;
   NRec: pointer;
+  k:Integer;
 begin
+  try
   if SaveDialog.Execute then
   begin
     case copy(SaveDialog.FileName, Length(SaveDialog.FileName) - 2, 3) of
@@ -284,6 +290,9 @@ begin
     FileName := SaveDialog.FileName;
     IsSaved := True;
     // SavedToCurrent();
+  end;
+  except
+    on EFCreateError do inc(k);
   end;
 end;
 
@@ -456,17 +465,13 @@ begin
   end;
   #22:
   begin
-    TFigure.pasteSelected;
-    Invalidate;
-    TFigure.History;
+    if copied<>nil then begin
+      TFigure.pasteSelected;
+      Invalidate;
+      TFigure.History;
+    end;
   end;
   else
-
-
-
-
-
-
 if DoText=True then
 begin
 
@@ -560,11 +565,13 @@ end;
 
 procedure TEditor.ButtonPasteClick(Sender: TObject);
 begin
-  TFigure.pasteSelected;
-  Invalidate;
-  TFigure.History;
-  ButtonCopy.Enabled:=False;
-  ButtonCopy.Enabled:=True;
+  if copied<>nil then begin
+    TFigure.pasteSelected;
+    Invalidate;
+    TFigure.History;
+    ButtonCopy.Enabled:=False;
+    ButtonCopy.Enabled:=True;
+  end;
 end;
 
 

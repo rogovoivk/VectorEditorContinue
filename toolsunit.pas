@@ -757,6 +757,7 @@ var
   SelectRegion: HRGN;
   ToolRegion: HRGN;
 begin
+  try
   NilParam:=False;
   SelectRegion := CreateRectRgn((WorldToScreen((Figures[high(Figures)] as TRectangleMagnifier).Points[0]).x),
                                (WorldToScreen((Figures[high(Figures)] as TRectangleMagnifier).Points[0]).y),
@@ -779,6 +780,8 @@ begin
   end;
   SetLength(Figures, Length(figures) - 1);
   SelectParamListCreate();
+  finally
+  end;
 end;
 
 procedure TSelectTool.SelectParamListCreate();
