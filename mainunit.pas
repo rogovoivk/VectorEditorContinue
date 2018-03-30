@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Menus, StdCtrls, ActnList, ColorBox, Spin, ToolsUnit, FiguresUnit, Buttons,
-  ExtDlgs, ScaleUnit, HistoryUnit, LCLType, Laz2_DOM;
+  ExtDlgs, ScaleUnit, LCLType, Laz2_DOM;
 
 type
 
@@ -222,8 +222,8 @@ begin
   try
   if SaveDialog.Execute then
   begin
-    case copy(SaveDialog.FileName, Length(SaveDialog.FileName) - 2, 3) of
-      'bmp':
+    case copy(SaveDialog.FileName, Length(SaveDialog.FileName) - 3, 4) of
+      '.bmp':
       begin
         Save2XML := True;
         Bitmap := TBitmap.Create;
@@ -242,7 +242,7 @@ begin
           Bitmap.Free;
         end;
       end;
-      'png':
+      '.png':
       begin
         Save2XML := True;
         PNG := TPortableNetworkGraphic.Create;
@@ -261,7 +261,7 @@ begin
           PNG.Free;
         end;
       end;
-      'jpg':
+      '.jpg':
       begin
         Save2XML := True;
         JPEG := TJPEGImage.Create;
@@ -283,7 +283,7 @@ begin
     end;
   end;
 
-  if Save2XML = True then
+  if Save2XML = False then
   begin
     TFigure.SaveFile(SaveDialog.FileName);
     Editor.Caption := SaveDialog.FileName + ' - ';
