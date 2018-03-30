@@ -242,7 +242,7 @@ object Editor: TEditor
     end
   end
   object SaveDialog: TSaveDialog
-    Filter = 'xml|.xml|bmp|.bmo|png|.png|jpg|.jpg'
+    Filter = 'xml|.xml'
     left = 720
     top = 16
   end
